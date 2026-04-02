@@ -287,7 +287,24 @@ function renderUserDashboard() {
             </div>`;
     });
 
-    renderUserBatches(); 
+    renderUserBatches();
+    renderDashboardQuizzes();
+}
+function renderDashboardQuizzes() {
+    const con = document.getElementById('dashboard-quiz-list');
+    if(!con) return;
+    
+    const activeQuizzes = appData.quizzes.filter(q => q.status !== 'archived');
+    
+    con.innerHTML = activeQuizzes.length ? '' : '<p class="muted">No active quizzes available.</p>';
+    activeQuizzes.forEach(q => {
+        con.innerHTML += `
+        <div style="background: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; display: flex; flex-direction: column;">
+            <h4 style="margin: 0 0 10px 0; color: #2c3e50;">${q.title}</h4>
+            <p style="margin: 0 0 15px 0; font-size: 13px; color: #666;">⏳ ${q.time} Mins | 📝 ${q.questions ? q.questions.length : 0} Qs</p>
+            <button class="btn btn-primary" style="margin-top: auto;" onclick="window.initiateQuiz('${q.firestoreId}')">Start Test</button>
+        </div>`;
+    });
 }
 
 /* ================= 3. ADMIN MODULE ================= */
