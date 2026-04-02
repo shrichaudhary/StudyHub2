@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commerce Study Hub - Live Exam Portal</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="app-loader" class="loader-overlay">
+        <div style="text-align:center;">
+            <div class="spinner"></div>
+            <p style="margin-top:10px;">Connecting to Live Server...</p>
+        </div>
+    </div>
+
+    <nav>
+        <div class="brand">📚 CommerceHub Live</div>
+        <div class="nav-right">
+            <button class="btn btn-outline" onclick="window.goToHome()">Home</button>
+            <div id="nav-auth-buttons" class="nav-group">
+                <button class="btn btn-outline" onclick="window.showUserAuth()">Student Login</button>
+                <button class="btn btn-outline" onclick="window.toggleAdminAuth()">Admin</button>
+            </div>
+            <div id="nav-user-profile" class="nav-profile hidden">
+                <span id="nav-username">User</span>
+                <button class="btn btn-danger btn-small" onclick="window.logoutUser()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div id="section-home" class="container">
+        <div class="card hero">
+            <h2>Premium Mock Test Series</h2>
+            <p>Live Data Sync Enabled. Tests given here are visible to Admin instantly.</p>
+            <button class="btn btn-success" id="hero-action-btn" onclick="window.showUserAuth()">Login / Register</button>
+        </div>
+        <h3>Available Quizzes (Live)</h3>
+        <div id="quiz-list-container" class="grid">
+            <p class="muted">Loading quizzes...</p>
+        </div>
+    </div>
+
+    <div id="section-user-auth" class="container hidden">
+        <div class="card auth-box">
+            <div class="tab-row">
+                <button class="tab-btn active" id="tab-login" onclick="window.switchAuthTab('login')">Login</button>
+                <button class="tab-btn" id="tab-register" onclick="window.switchAuthTab('register')">Register</button>
+            </div>
+            <div id="auth-form-login">
+                <h3>Student Login</h3>
+                <input type="email" id="loginEmail" class="input-field" placeholder="Email or Username" autocomplete="username">
+                <input type="password" id="loginPass" class="input-field" placeholder="Password" autocomplete="current-password">
+                <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="window.loginUser()">Login</button>
+            </div>
+            <div id="auth-form-register" class="hidden">
+                <h3>Create Account</h3>
+                <input type="email" id="regEmail" class="input-field" placeholder="Email Address" autocomplete="username">
+                <input type="text" id="regUser" class="input-field" placeholder="Choose Username">
+                <input type="password" id="regPass" class="input-field" placeholder="Password" autocomplete="new-password">
+                <button class="btn btn-success" style="width:100%; margin-top:10px;" onclick="window.registerUser()">Register</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="section-user-dashboard" class="container hidden">
+        <div class="card">
+            <h2 class="primary">👤 My Dashboard</h2>
+            <p>Welcome back, <strong id="dash-username">User</strong></p>
+        </div>
+
+        <div class="card" style="margin-bottom: 20px;">
+            <h3 style="margin-top:0; color:#2c3e50;">📺 My Live Batches</h3>
+            <p style="font-size:14px; color:#666; margin-bottom: 15px;">Access your premium video lectures here.</p>
+            <div id="dashboard-batches-list" class="grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;">
+                <p class="muted">Loading your batches...</p>
+            </div>
+        </div>
+
+        <div class="card ai-card">
+            <h3 class="ai-title">✨ AI Study Buddy (Gemini Powered)</h3>
+            <p>Ask any Commerce doubt (e.g., "Explain Golden Rules of Accounting").</p>
+            <div class="row">
+                <input type="text" id="ai-doubt-input" class="input-field" placeholder="Type your doubt here...">
+                <button class="btn btn-ai" onclick="window.askGemini()">Ask AI</button>
+            </div>
+            <div id="ai-loading" class="hidden ai-loading">Thinking... 🧠</div>
+            <div id="ai-response" class="hidden ai-response-box"></div>
+        </div>
+        <div class="grid two">
+            <div class="card warning">
+                <h3>⏳ Pending Reviews</h3>
+                <p class="muted">Waiting for Admin to check subjective answers.</p>
+                <div id="dash-pending-list">Loading...</div>
+            </div>
+            <div class="card success">
+                <h3>✅ Completed Tests</h3>
+                <p class="muted">Your live results.</p>
+                <div id="dash-history-list">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="section-admin-login" class="container hidden">
+        <div class="card auth-box">
+            <h2>🔐 Admin Panel</h2>
+            <input type="email" id="adminEmail" class="input-field" placeholder="Admin Email">
+            <input type="password" id="adminPass" class="input-field" placeholder="Password">
+            <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="window.verifyAdmin()">Login</button>
+            <p class="muted" style="margin-top:10px;">Admin access is granted via your Firestore profile role.</p>
+        </div>
+    </div>
+
+    <div id="section-admin-dashboard" class="container hidden">
+        <div class="admin-top">
+            <h2>👨‍🏫 Admin Dashboard (Live View)</h2>
+            <div class="row">
+                <button class="btn btn-success" onclick="window.showQuizCreator()">+ Create Content</button>
+                <button class="btn btn-danger" onclick="window.logoutAdmin()">Logout</button>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h3>🛠️ Management Controls</h3>
+            <div class="row">
+                <button class="btn btn-primary" onclick="window.showStudentManager()">Manage Students</button>
+                <button class="btn btn-outline" style="color:#333; border-color:#333;" onclick="window.showAdminManager()">Manage Admins</button>
+            </div>
+        </div>
+
+        <div class="card warn-border">
+            <h3>⚠️ Global Pending Evaluations (<span id="admin-pending-count">0</span>)</h3>
+            <p class="muted">Submissions from all students appear here instantly.</p>
+            <div id="pending-eval-list"></div>
+        </div>
+        <div class="card">
+            <h3>Active Quizzes (Cloud)</h3>
+            <div id="admin-quiz-list"></div>
+        </div>
+    </div>
+
+    <div id="section-admin-students" class="container hidden fade-in">
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2>🎓 Student Management</h2>
+                <button class="btn btn-outline" style="color:#333; border-color:#333;" onclick="window.goToAdminDashboard()">Back to Dashboard</button>
+            </div>
+            
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e0e0e0; margin-bottom: 20px;">
+                <h4 style="margin-top:0; color: #2c3e50;">➕ Add New Student Manually</h4>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <input type="email" id="newAdminStudentEmail" class="input-field" style="flex:1; min-width:200px;" placeholder="Student Email">
+                    <input type="text" id="newAdminStudentUser" class="input-field" style="flex:1; min-width:150px;" placeholder="Username">
+                    <input type="password" id="newAdminStudentPass" class="input-field" style="flex:1; min-width:150px;" placeholder="Password">
+                    <button class="btn btn-success" style="height: 40px; margin-top: 8px; padding: 0 20px;" onclick="window.addStudentByAdmin()">Add Student</button>
+                </div>
+            </div>
+
+            <input type="text" id="student-search" class="input-field" placeholder="Search by username or email..." onkeyup="window.filterStudents()">
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Password</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-student-list">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="section-student-profile" class="container hidden fade-in">
+        <div class="auth-box">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2 id="profile-name">Student Name</h2>
+                <button class="btn btn-outline" style="color:#333; border-color:#333;" onclick="window.showStudentManager()">Back to List</button>
+            </div>
+            <hr>
+            
+            <div style="display:flex; gap:15px; margin-bottom:20px;">
+                <div class="card" style="flex:1; text-align:center; box-shadow:none; border:1px solid #eee;">
+                    <h3>Tests Taken</h3>
+                    <h1 id="profile-tests-count" style="color:#2ecc71">0</h1>
+                </div>
+                <div class="card" style="flex:1; text-align:center; box-shadow:none; border:1px solid #eee;">
+                    <h3>Avg Score</h3>
+                    <h1 id="profile-avg-score" style="color:#3498db">0%</h1>
+                </div>
+            </div>
+
+            <h3>📝 Quiz History</h3>
+            <div id="profile-history-list" style="margin-top:10px;"></div>
+        </div>
+    </div>
+
+    <div id="section-manage-admins" class="container hidden fade-in">
+        <div class="auth-box">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2>🛡️ Manage Admins</h2>
+                <button class="btn btn-outline" style="color:#333; border-color:#333;" onclick="window.goToAdminDashboard()">Back</button>
+            </div>
+            
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <input type="text" id="newAdminEmail" class="input-field" placeholder="New Admin Email/ID">
+                <input type="text" id="newAdminPass" class="input-field" placeholder="Password">
+                <button class="btn btn-primary" onclick="window.addNewAdmin()">Add</button>
+            </div>
+
+            <div id="admin-list-display" style="margin-top:20px;"></div>
+        </div>
+    </div>
+
+    <div id="section-quiz-creator" class="container hidden">
+        <div class="card">
+            <h3>Create New Content</h3>
+            
+            <div class="panel panel-ok" style="margin-bottom: 15px; border-color: #2980b9; background: #eaf2f8;">
+                <h4 class="panel-title" style="color: #2980b9;">📺 Upload Video Batch (JSON)</h4>
+                <p class="muted">Upload Batch Name, Folders, and Drive Links. Links are auto-converted to preview mode.</p>
+                <input type="file" accept=".json" onchange="window.uploadBatchDataJSON(this)">
+            </div>
+
+            <div class="panel panel-ok">
+                <h4 class="panel-title">📂 Upload Quiz via JSON</h4>
+                <p class="muted">Select your generated .json file to upload instantly.</p>
+                <input type="file" id="jsonQuizInput" accept=".json" onchange="window.uploadQuizJSON(this)">
+            </div>
+            <div class="panel panel-ai">
+                <h4 class="panel-title">✨ AI Auto-Generate Quiz</h4>
+                <div class="row">
+                    <input type="text" id="aiQuizTopic" class="input-field" placeholder="Enter Topic (e.g., 'GST Basics')">
+                    <button class="btn btn-ai" onclick="window.generateAIQuiz()">Generate</button>
+                </div>
+                <div id="ai-quiz-loading" class="hidden ai-loading">AI is creating quiz... 🤖</div>
+            </div>
+            <hr>
+            <div class="grid three">
+                <input type="text" id="newQuizTitle" class="input-field" placeholder="Quiz Title">
+                <input type="number" id="newQuizTime" class="input-field" placeholder="Time (Minutes)">
+                <input type="number" id="newQuizMarks" class="input-field" placeholder="Total Marks">
+            </div>
+            <textarea id="newQuizInstructions" class="input-field" rows="2" placeholder="Instructions..."></textarea>
+            <div class="creator-section">
+                <h4>Add Question Manually</h4>
+                <div class="row" style="margin-bottom:10px;">
+                    <select id="qType" class="input-field" style="width:auto;" onchange="window.renderAnswerInputs()">
+                        <option value="mcq">MCQ</option>
+                        <option value="msq">MSQ (Multiple)</option>
+                        <option value="text">Short Answer (Text)</option>
+                        <option value="image">Photo Upload (Numerical)</option>
+                    </select>
+                    <input type="number" id="qMarks" class="input-field" style="width:90px;" value="1">
+                </div>
+                <textarea id="qText" class="input-field" rows="2" placeholder="Question Text..."></textarea>
+                <div id="answer-inputs-area"></div>
+                <button class="btn btn-primary" onclick="window.addQuestionToBuffer()">+ Add Question</button>
+            </div>
+            <div style="margin-top:20px;">
+                <h4>Preview (<span id="qCount">0</span>)</h4>
+                <div id="questions-buffer-list"></div>
+            </div>
+            <div style="margin-top:20px; text-align:right;">
+                <button class="btn btn-danger" onclick="window.goToAdminDashboard()">Cancel</button>
+                <button class="btn btn-success" onclick="window.publishQuiz()">🚀 Publish Quiz</button>
+            </div>
+        </div>
+    </div>
+
+   <div id="section-instructions" class="container hidden fade-in">
+        <div class="card">
+            <h2 id="ins-title" style="margin-top:0;">Quiz Title</h2>
+            <div class="rules-box">
+                <strong style="font-size:16px;">General Instructions:</strong>
+                <ol style="padding-left: 20px;">
+                    <li>The clock has been set at the server and countdown timer at the top will display time remaining.</li>
+                    <li>When the timer reaches zero, the examination will end by itself automatically.</li>
+                    <li>The Question Palette on the right side of screen will show the status of each question using following symbols:</li>
+                </ol>
+                <div class="palette-legend" style="border:none; padding:0; margin-bottom: 15px;">
+                    <div class="legend-item"><div class="legend-box" style="background:#f4f6f8; border:1px solid #ccc;"></div> You have not visited the question yet.</div>
+                    <div class="legend-item"><div class="legend-box" style="background:#e74c3c;"></div> You have visited but not answered.</div>
+                    <div class="legend-item"><div class="legend-box" style="background:#27ae60;"></div> You have answered the question.</div>
+                    <div class="legend-item"><div class="legend-box" style="background:#9b59b6;"></div> You have marked the question for review.</div>
+                </div>
+                <strong>Specific Rules:</strong>
+                <p id="ins-text" class="small">Read carefully.</p>
+            </div>
+            
+            <div style="background:#e8f8f5; padding:15px; border-radius:5px; margin-bottom:15px; display:flex; justify-content:space-between;">
+                <div><strong>Duration:</strong> <span id="ins-time"></span> mins</div>
+                <div><strong>Max Marks:</strong> <span id="ins-marks"></span></div>
+            </div>
+
+            <label style="display:flex; align-items:center; gap:10px; cursor:pointer; padding: 10px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 5px;">
+                <input type="checkbox" id="agree-rules-chk" onchange="document.getElementById('start-exam-btn').disabled = !this.checked">
+                <span>I have read and understood the instructions. I agree that I am not carrying any prohibited gadgets.</span>
+            </label>
+
+            <button id="start-exam-btn" class="btn btn-success" style="width:100%; margin-top:15px; font-size:16px; padding:12px;" disabled onclick="window.startTest()">I am ready to begin</button>
+        </div>
+    </div>
+
+    <div id="section-active-quiz" class="container hidden fade-in" style="max-width: 1200px;">
+        <div class="sticky-timer">
+            <span style="font-weight:bold; font-size:1.1em;" id="exam-title-header">Commerce Exam</span>
+            <div style="display:flex; align-items:center; gap:15px;">
+                <span class="timer-badge" id="timer-display">00:00</span>
+                <button class="btn btn-danger btn-small" onclick="window.submitTest()">Submit Exam</button>
+            </div>
+        </div>
+
+        <div class="exam-layout">
+            <div class="exam-main card" style="margin-bottom:0;">
+                <div class="question-header">
+                    <div>
+                        <span class="strong" style="font-size:1.2em;">Question <span id="active-q-num">1</span></span>
+                        <span class="q-tag" id="active-q-type">MCQ</span>
+                    </div>
+                    <div style="font-weight:bold; color:#2980b9;">+<span id="active-q-marks">1</span> Marks</div>
+                </div>
+                
+                <h3 id="active-question-text" class="question-text" style="font-size: 1.1em; line-height: 1.5;">Loading...</h3>
+                <div id="active-options-area" style="margin-top:20px; margin-bottom:30px;"></div>
+                
+                <hr>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <button class="btn btn-outline" onclick="window.markForReview()">⭐ Mark for Review & Next</button>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn btn-outline" id="btn-prev" onclick="window.changeQuestion(-1)">← Previous</button>
+                        <button class="btn btn-primary" id="btn-next" onclick="window.changeQuestion(1)">Save & Next →</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="exam-sidebar">
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
+                    <div style="width:40px; height:40px; border-radius:50%; background:#eee; display:flex; justify-content:center; align-items:center; font-size:20px;">👤</div>
+                    <div>
+                        <div style="font-weight:bold; font-size:14px;" id="cbt-student-name">Student Name</div>
+                        <div style="font-size:12px; color:#777;">Live Attempt</div>
+                    </div>
+                </div>
+                <hr>
+                <h4 style="margin: 10px 0;">Question Palette</h4>
+                <div id="question-grid-target" class="palette-grid"></div>
+                
+                <div class="palette-legend">
+                    <div class="legend-item"><div class="legend-box" style="background:#27ae60;"></div> Answered</div>
+                    <div class="legend-item"><div class="legend-box" style="background:#e74c3c;"></div> Not Answered</div>
+                    <div class="legend-item"><div class="legend-box" style="background:#f4f6f8; border:1px solid #ccc;"></div> Not Visited</div>
+                    <div class="legend-item"><div class="legend-box" style="background:#9b59b6;"></div> Marked for Review</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="section-admin-grading" class="container hidden">
+        <button class="btn btn-outline" style="color:#333; border:1px solid #333; margin-bottom:10px;" onclick="window.goToAdminDashboard()">← Back</button>
+        <div class="card">
+            <h3>📝 Grade Submission</h3>
+            <p>Student: <strong id="grade-student-name">Name</strong> | Quiz: <span id="grade-quiz-title">Title</span></p>
+            <hr>
+            <div id="grading-area"></div>
+            <div class="right">
+                <div class="big-score">Total Score: <span id="grading-total-score">0</span></div>
+                <button class="btn btn-success" onclick="window.publishGradedResult()">✅ Publish Result</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="section-result" class="container hidden">
+        <div class="card center">
+            <h2 id="res-status-title">Result</h2>
+            <div id="res-pending-msg" class="hidden notice">
+                <h3>⚠️ Sent for Review</h3>
+                <p>Data synced to Admin panel. Check back later.</p>
+            </div>
+            <div id="res-score-box">
+                <div class="score-big"><span id="res-score">0</span> / <span id="res-total">0</span></div>
+            </div>
+        </div>
+        <div class="card" id="res-details-card">
+            <h3>Report Card</h3>
+            <div id="detailed-report"></div>
+        </div>
+        <button class="btn btn-primary" onclick="window.checkUserLoginStatus()">Back to Dashboard</button>
+    </div>
+
+    <div id="section-batch-hub" class="container hidden fade-in">
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <div>
+                    <h2 id="hub-header-title" style="margin:0;">My Batches</h2>
+                    <p id="hub-header-subtitle" class="muted" style="margin:5px 0 0 0;">Select a batch to view subjects.</p>
+                </div>
+                <button id="hub-back-btn" class="btn btn-outline" style="color:#333; border-color:#333;" onclick="window.checkUserLoginStatus()">← Dashboard</button>
+            </div>
+            <hr>
+            <div id="hub-dynamic-grid"></div>
+        </div>
+    </div>
+
+    <video id="hiddenFeed" autoplay playsinline muted></video>
+    <canvas id="hiddenCanvas"></canvas>
+
+    <script src="server.js"></script>
+    <script type="module" src="app.js"></script>
+</body>
+</html>
