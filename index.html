@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Commerce Study Hub - Live Exam Portal</title>
+    <title>Study Hub</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -17,7 +17,7 @@
     </div>
 
     <nav>
-        <div class="brand">📚 CommerceHub Live</div>
+        <div class="brand">📚 Study Hub Live</div>
         <div class="nav-right">
             <button class="btn btn-outline" onclick="window.goToHome()">Home</button>
             <div id="nav-auth-buttons" class="nav-group">
@@ -33,7 +33,7 @@
 
     <div id="section-home" class="container">
         <div class="card hero">
-            <h2>Premium Mock Test Series</h2>
+            <h2>Mock Test Series</h2>
             <p>Live Data Sync Enabled. Tests given here are visible to Admin instantly.</p>
             <button class="btn btn-success" id="hero-action-btn" onclick="window.showUserAuth()">Login / Register</button>
         </div>
@@ -70,10 +70,18 @@
             <h2 class="primary">👤 My Dashboard</h2>
             <p>Welcome back, <strong id="dash-username">User</strong></p>
         </div>
+        
+        <div class="card" style="margin-bottom: 20px;">
+            <h3 style="margin-top:0; color:#2c3e50;">📝 Available Mock Tests</h3>
+            <p style="font-size:14px; color:#666; margin-bottom: 15px;">Attempt your live quizzes here.</p>
+            <div id="dashboard-quiz-list" class="grid" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px;">
+                <p class="muted">Loading quizzes...</p>
+            </div>
+        </div>
 
         <div class="card" style="margin-bottom: 20px;">
             <h3 style="margin-top:0; color:#2c3e50;">📺 My Live Batches</h3>
-            <p style="font-size:14px; color:#666; margin-bottom: 15px;">Access your premium video lectures here.</p>
+            <p style="font-size:14px; color:#666; margin-bottom: 15px;">Access your video lectures here.</p>
             <div id="dashboard-batches-list" class="grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;">
                 <p class="muted">Loading your batches...</p>
             </div>
@@ -81,7 +89,7 @@
 
         <div class="card ai-card">
             <h3 class="ai-title">✨ AI Study Buddy (Gemini Powered)</h3>
-            <p>Ask any Commerce doubt (e.g., "Explain Golden Rules of Accounting").</p>
+            <p>Ask any doubt (e.g., "Explain Golden Rules of Accounting").</p>
             <div class="row">
                 <input type="text" id="ai-doubt-input" class="input-field" placeholder="Type your doubt here...">
                 <button class="btn btn-ai" onclick="window.askGemini()">Ask AI</button>
@@ -131,7 +139,7 @@
         </div>
 
         <div class="card warn-border">
-            <h3>⚠️ Global Pending Evaluations (<span id="admin-pending-count">0</span>)</h3>
+            <h3>⚠️ Pending Evaluations (<span id="admin-pending-count">0</span>)</h3>
             <p class="muted">Submissions from all students appear here instantly.</p>
             <div id="pending-eval-list"></div>
         </div>
